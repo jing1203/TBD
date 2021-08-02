@@ -1,0 +1,3 @@
+2021-05-20 15:42:51,808 - INFO: 当前打印记录新增1条，开始进入下一条打印，当前打印记录<print_record(id='None', act_material='None', act_time='None')>，历史打印记录<print_record(id='None', act_material='None', act_time='None')>
+2021-05-20 15:43:25,900 - INFO: 当前打印记录新增1条，开始进入下一条打印，当前打印记录<print_record(id='None', act_material='None', act_time='None')>，历史打印记录<print_record(id='None', act_material='None', act_time='None')>
+2021-05-20 15:43:59,990 - INFO: 当前打印记录新增1条，开始进入下一条打印，当前打印记录<print_record(id='None', act_material='None', act_time='None')>，历史打印记录<print_record(id='None', act_material='None', act_time='None')>
