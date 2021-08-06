@@ -11,8 +11,10 @@ class Ubyte():
         self.speed2=self.slist["fspeed2"]
         self.ci=self.slist["ci"]
 
+
+
     def GetSetIniData(self,head):
-        sl={}
+        sl={} # 获取设置值
         dl={}
         if head=="设置光机电流":
             dl={"电流值":str(self.ci)}
@@ -67,6 +69,7 @@ class Ubyte():
         buff=[0x2a,0xf9,0x0d]
         return buff
 
+    # 红色、蓝色、绿色，设置电流
     def SetLightCurrent(self,rl,rm,gl,gm,bl,bm):
         buff=[0x55,0x07,0x54]
         buff.append(rl)

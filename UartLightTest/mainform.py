@@ -1,9 +1,9 @@
 #coding:utf-8
-from form.main import Ui_Dialog
-from PySide2.QtWidgets import QMainWindow,QTreeWidgetItem,QFileDialog,QMessageBox,QApplication,QStyleFactory
-from PySide2.QtCore import QTimer,Qt,QIODevice,QTime,QCoreApplication,QEventLoop
-from PySide2 import QtGui
-from PySide2.QtSerialPort import QSerialPort,QSerialPortInfo
+# from form.main import Ui_Dialog
+# from PySide2.QtWidgets import QMainWindow,QTreeWidgetItem,QFileDialog,QMessageBox,QApplication,QStyleFactory
+# from PySide2.QtCore import QTimer,Qt,QIODevice,QTime,QCoreApplication,QEventLoop
+# from PySide2 import QtGui
+# from PySide2.QtSerialPort import QSerialPort,QSerialPortInfo
 from logwrite import LogData
 import time
 from ubyte import Ubyte
@@ -14,14 +14,15 @@ from sqlalchemy.ext.declarative import declarative_base
 from readlight import readcom
 import datetime
 from exhelpper import Exhelp
-from setsendmsgform import SetSmsgwindow
+import warnings
+#from setsendmsgform import SetSmsgwindow
 
 Base = declarative_base()
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.dk=None
-        self.new =Ui_Dialog()
+        # self.new =Ui_Dialog()
         self.new.setupUi(self)
         #etime=time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
         self.setWindowTitle("UartLight Test 20210728")
@@ -29,7 +30,7 @@ class MainWindow(QMainWindow):
 
     def InitData(self):
         self.serachports()
-        self.com=QSerialPort()
+        # self.com=QSerialPort()
         self.com.readyRead.connect(self.readData)
         self.isopen=False
         self.new.btn_open.clicked.connect(self.openCom)
@@ -59,7 +60,7 @@ class MainWindow(QMainWindow):
         self.testindex=0
         self.InitDb()
         self.rstate=0
-        self.imglist=["f.png","light.png","s10.png","black.png"]
+        self.imglist=["white.png","photometer.png","grid.png","black.png"]
         self.lightv=0
         self.ltmp=0
         self.slist=GetTestTime("set.ini")
@@ -80,7 +81,7 @@ class MainWindow(QMainWindow):
         self.ex=Exhelp()
         self.worktime=self.slist["worktime"]
         self.resttime=self.slist["resttime"]
-        self.sw=SetSmsgwindow()
+        #self.sw=SetSmsgwindow()
         self.sw._signal.connect(self.callsw)
         self.imgtype=0
         self.autotime=0
@@ -124,6 +125,7 @@ class MainWindow(QMainWindow):
                 self.ShowMsg("重试次数超出3次，不再重试！！！！")
 
     def GetTimeSmap(self):
+        warnings.warn(" turn to fixture，is deprecated", DeprecationWarning)
         t = time.time()
         tmp=int(round(t * 1000))
         rtmp=0
@@ -134,11 +136,13 @@ class MainWindow(QMainWindow):
         return str(rtmp)
         
     def callsw(self,msg):
+        warnings.warn(" is deprecated", DeprecationWarning)
         print(msg)
         data=self.ub.GetNameData(msg)
         self.WriteData(data)
 
     def ShowSetW(self):
+        warnings.warn(" is deprecated", DeprecationWarning)
         text=self.new.cb_test.currentText()
         sl=self.ub.GetSetIniData(text)
         self.sw.SetMsg(sl)
@@ -198,6 +202,7 @@ class MainWindow(QMainWindow):
             self.ShowMsg("设置电流失败："+str(e))
 
     def HexToBytes(self,dstr):
+        warnings.warn(" turn to fixture, deprecated", DeprecationWarning)
         sl=dstr.split(" ")
         bl=[]
         if len(sl)>0:
@@ -206,6 +211,7 @@ class MainWindow(QMainWindow):
         return bl
 
     def SendBytesByStr(self):
+        warnings.warn(" turn to fixture, deprecated", DeprecationWarning)
         hexstr=self.new.txt_send.text()
         if len(hexstr)>0:
             hexstr=hexstr.rstrip()
@@ -243,6 +249,7 @@ class MainWindow(QMainWindow):
     结束数据库操作
     """
     def GetRealValue(self,sl):
+        warnings.warn(" turn to fixture, deprecated", DeprecationWarning)
         slen=len(sl)
         maxv=0.0
         minv=0.0
@@ -261,6 +268,7 @@ class MainWindow(QMainWindow):
         return ev
 
     def SetDk(self,dk):
+        warnings.warn(" is deprecated", DeprecationWarning)
         self.dk=dk
 
     def ShowImage(self):
@@ -283,11 +291,11 @@ class MainWindow(QMainWindow):
 
     def ChangImage(self,b):
         if b==0:
-            self.w.LoadImg("f.png")
+            self.w.LoadImg("white.png")
         elif b==1:
-            self.w.LoadImg("s10.png")
+            self.w.LoadImg("grid.png")
         elif b==2:
-            self.w.LoadImg("light.png")
+            self.w.LoadImg("photometer.png")
         elif b==3:
             self.w.LoadImg("black.png")
 
@@ -633,6 +641,7 @@ class MainWindow(QMainWindow):
                     self.ShowReceive(buff,"获取PWM值"+str(self.GetRealInt([buff[2],buff[3]])))
 
     def HexString(self,bl):
+        warnings.warn(" turn to fixture, deprecated", DeprecationWarning)
         s=""
         blen=len(bl)
         for i in range(0,blen):
@@ -643,6 +652,7 @@ class MainWindow(QMainWindow):
         return s
 
     def bytestoint(self,buff):
+        warnings.warn(" turn to fixture, deprecated", DeprecationWarning)
         blist=[]
         for e in buff:
             blist.append(int.from_bytes(e,byteorder='big',signed=False))
@@ -690,9 +700,11 @@ class MainWindow(QMainWindow):
             self.new.cb_pho.addItem(e.portName())
 
     def ShowBox(self,msg):
+        warnings.warn(" deprecated", DeprecationWarning)
         reply = QMessageBox.information(self, "串口测试", msg, QMessageBox.Yes)
 			
     def closeEvent(self, event):
+        warnings.warn("  deprecated", DeprecationWarning)
         try:
             if self.w.isVisible():
                 self.w.close()

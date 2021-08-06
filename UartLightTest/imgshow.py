@@ -12,7 +12,7 @@ class SWindow(QMainWindow):
         super(SWindow, self).__init__()
         self.new = Ui_showimg()
         self.new.setupUi(self)
-        self.LoadImg("f.png")
+        self.LoadImg("white.png")
     
     """
     加载图片

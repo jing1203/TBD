@@ -2,6 +2,7 @@
 import serial
 import time
 import struct
+import warnings
 class readcom():
     def __init__(self,portname):
         self.portname=portname
@@ -27,6 +28,7 @@ class readcom():
             self.com.close()
 
     def HexToString(self,data):
+        warnings.warn(" is deprecated", DeprecationWarning)
         hstr=""
         for e  in data:
             hstr+=hex(e)+" "

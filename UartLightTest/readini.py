@@ -1,5 +1,8 @@
 #congdings:utf-8
 from configparser import ConfigParser
+
+# deprecated ，todo rebuild
+
 def GetTestTime(path):
     cf = ConfigParser()
     cf.read(path)

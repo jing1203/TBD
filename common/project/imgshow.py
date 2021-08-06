@@ -14,7 +14,7 @@ class SWindow(QMainWindow):
         self.new.setupUi(self)
 
         # 默认白图，幅面1920*1080
-        self.LoadImg("f.png")
+        self.LoadImg("white.png")
     
     """
     加载图片

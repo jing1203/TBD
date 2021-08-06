@@ -3,6 +3,8 @@ from PySide2.QtWidgets import QApplication,QStyleFactory
 import sys
 from mainform import MainWindow
 
+# deprecated
+
 if __name__ == '__main__':
 	app =QApplication(sys.argv)
 	app.setStyle(QStyleFactory.create('Fusion'))
