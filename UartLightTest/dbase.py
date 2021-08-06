@@ -16,7 +16,6 @@ class PRecord(Base):
 	ldate=Column(String(64))
 
 	def __repr__(self):
-		#   光强、温度、时间
 		return "<PRecord(lvalue='%s', ltmp='%s', ldate='%s')>" \
 			% (self.lvalue, self.ltmp,self.ldate)
 		

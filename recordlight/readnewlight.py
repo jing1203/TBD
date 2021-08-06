@@ -4,6 +4,9 @@ import time
 import struct
 import serial.tools.list_ports as getport
 class readcom2():
+    '''
+    传感器
+    '''
     def __init__(self,portname):
         self.portname=portname
         self.com=serial.Serial()

@@ -12,8 +12,6 @@ class SWindow(QMainWindow):
         super(SWindow, self).__init__()
         self.new = Ui_showimg()
         self.new.setupUi(self)
-
-        # 默认白图，幅面1920*1080
         self.LoadImg("f.png")
     
     """

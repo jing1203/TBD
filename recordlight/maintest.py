@@ -17,9 +17,9 @@ Base = declarative_base()
 
 class RecordLight():
     def __init__(self):
-        self.ld=LogData()
-        self.isopen=False
-        self.ledon=False
+        self.ld=LogData()   # 转html报告
+        self.isopen=False   # 环境配置  fixture
+        self.ledon=False    # 传感器
         self.lightlist=[]
         self.uarttime=0
         self.starttime=0
@@ -28,6 +28,7 @@ class RecordLight():
         self.ldata=""
         self.isinitdb=false
         self.ismodel=False
+
         self.modelname=""
         self.lightvalue=0#光度计的值
         self.issupport=0#判断是否支撑层
@@ -38,6 +39,7 @@ class RecordLight():
         self.supportlight=0#支撑层的最大光强值
         self.layer=0
         self.plist=[]
+
         path="sqlite:///test.db"
         self.db2=InitDb(path)
         self.setlist=GetTestSet("power.ini")
@@ -62,14 +64,14 @@ class RecordLight():
             self.minmid=self.setlist["midlux1"]
             print(self.setlist)
 
-    def InitCom(self):
+    def InitCom(self): # 初始化传感器
         comname=self.c1
         self.rc=readcom2(comname)
         self.rc.InitCOm(self.b1)
         self.isopen=self.rc.OpenCom()
         self.InitLight()
 
-    def InitLight(self):
+    def InitLight(self):   # 初始化光度计
         self.oldrc=readcom(self.c2)
         self.oldrc.InitCOm(self.b2)
         self.oldrc.OpenCom()
@@ -113,9 +115,9 @@ class RecordLight():
             path="sqlite:///test.db"
             self.db=InitDb(path)
             self.isinitdb=true
-        while True:
+        while True:    #  用例执行指定次数
             try:
-                if self.ledon and self.oldrc:
+                if self.ledon and self.oldrc:  # 测试前置条件：光度计和传感器同时拥有数据
                     lv=self.oldrc.ReadData()
                     self.lightvalue=lv
                     #self.ShowMsg("紫外光强："+str(lv))
@@ -144,7 +146,7 @@ class RecordLight():
         #print(mname)
         return mname
 
-    def DoTimer(self):
+    def DoTimer(self):   #  公用方法
         self.uarttime=int(self.GetTimeSmap())
         self.rt1 = threading.Thread(target = self.DoReceiveAll)
         #self.rt2=threading.Thread(target=self.ReadOldLight)
@@ -154,7 +156,7 @@ class RecordLight():
         #self.rt1.join()
         #self.rt2.join()
 
-    def GetTimeSmap(self):
+    def GetTimeSmap(self):   #  公用方法
         t = time.time()
         tmp=int(round(t * 1000))
         rtmp=0
@@ -164,7 +166,7 @@ class RecordLight():
             print(str(e))
         return str(rtmp)
 
-    def CheckValue(self,layer):
+    def CheckValue(self,layer):   # 用例名称及校验
         if layer==1:
             if self.lightmax>=self.p1_layer1-1 and self.lightmax <= self.p1_layer1+1:
                 self.ShowMsg("@@@P1光强校验通过@@@ layer:"+str(layer)+" "+str(self.lightmax))
@@ -258,7 +260,7 @@ class RecordLight():
                     offtimes=0
                     layer=0
                     self.layer=layer
-                if lv>0:
+                if lv>0:  # light value
                     #self.Savedata(str(lv),"tmp")
                     #self.ShowMsg("光照数据："+str(lv))
                     if lv> maxv:

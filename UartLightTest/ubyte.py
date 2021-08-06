@@ -1,7 +1,4 @@
 #coding:utf-8
-
-
-
 class Ubyte():
     def __init__(self):
         self.speed1=60
@@ -51,7 +48,7 @@ class Ubyte():
         return buff
 
     def LedOn(self):
-        buff = [0x2a, 0x4b, 0x0d]
+        buff=[0x2a,0x4b,0x0d]
         return buff
 
     def LedOff(self):

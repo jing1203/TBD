@@ -1,9 +1,5 @@
 #congdings:utf-8
 from configparser import ConfigParser
-"""
-配置文件读取
-"""
-
 def GetTestTime(path):
     cf = ConfigParser()
     cf.read(path)
@@ -21,10 +17,12 @@ def GetTestTime(path):
     ledofftime=cf.getint("Sets","ledofftime")
     worktime=cf.getint("Sets","worktime")
     resttime=cf.getint("Sets","resttime")
+    waittime=cf.getint("Sets","waittime")
     tlist={"lightcurrent":lightcurrent,"fspeed1":fspeed1,
     "fspeed2":fspeed2,"istate":imagestate,"comname":comname,"phocom":phocom,
     "printlayer":printlayer,"printtimes":printtimes,"ci":ci,"lightv":lightv,
-    "ledontime":ledontime,"ledofftime":ledofftime,"worktime":worktime,"resttime":resttime}
+    "ledontime":ledontime,"ledofftime":ledofftime,"worktime":worktime,"resttime":resttime,
+    "waittime":waittime}
     return tlist
 
 def SetTestTime(vl,path):

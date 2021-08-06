@@ -24,11 +24,9 @@ class MainWindow(QMainWindow):
         self.new =Ui_Dialog()
         self.new.setupUi(self)
         #etime=time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
-        self.setWindowTitle("UartLight Test 20210712")
+        self.setWindowTitle("UartLight Test 20210728")
         self.InitData()
 
-
-# UI 初始化
     def InitData(self):
         self.serachports()
         self.com=QSerialPort()
@@ -88,21 +86,63 @@ class MainWindow(QMainWindow):
         self.autotime=0
         print("------AUTO 测试次数"+str(self.autotime*self.testlayer+self.testindex)+"--------\r\n")
         self.isledoff=False
+        #定时器开启，用于判断数据是否超时,发送数据后按1秒来执行
+        self.readwaittime=self.slist["waittime"]
+        self.waitcomtimer= QTimer()
+        self.waitcomtimer.setTimerType(Qt.PreciseTimer)
+        self.waitcomtimer.timeout.connect(self.callwait)
+        self.wsec=0#用于判断是否超时
+        self.retrytimes=0#重试次数
+        self.uarttime=0
 
+    def StartTim(self):
+        self.wsec=0
+        self.waitcomtimer.start(1000)
 
-#
+    def StopTim(self):
+        self.waitcomtimer.stop()
+        self.wsec=0
+
+    def callwait(self):
+        self.wsec+=1
+        if self.wsec==self.readwaittime:
+            if self.retrytimes<3:
+                self.ShowMsg("数据超时，尝试重新执行，对变量进行初始化，重新执行！重试次数："+str(self.retrytimes))
+                self.ShowMsg("数据超时，尝试重新执行，对变量进行初始化，重新执行！重试次数："+str(self.retrytimes))
+                self.ShowMsg("数据超时，尝试重新执行，对变量进行初始化，重新执行！重试次数："+str(self.retrytimes))
+                self.ShowMsg("数据超时，尝试重新执行，对变量进行初始化，重新执行！重试次数："+str(self.retrytimes))
+                self.ShowMsg("数据超时，尝试重新执行，对变量进行初始化，重新执行！重试次数："+str(self.retrytimes))
+                self.wsec=0
+                self.testint=0
+                self.waitcomtimer.stop()
+                self.retrytimes+=1
+            else:
+                self.ShowMsg("重试次数超出3次，不再重试！！！！")
+                self.ShowMsg("重试次数超出3次，不再重试！！！！")
+                self.ShowMsg("重试次数超出3次，不再重试！！！！")
+                self.ShowMsg("重试次数超出3次，不再重试！！！！")
+                self.ShowMsg("重试次数超出3次，不再重试！！！！")
+
+    def GetTimeSmap(self):
+        t = time.time()
+        tmp=int(round(t * 1000))
+        rtmp=0
+        try:
+            rtmp=tmp-self.uarttime
+        except Exception as e:
+            print(str(e))
+        return str(rtmp)
+        
     def callsw(self,msg):
         print(msg)
         data=self.ub.GetNameData(msg)
         self.WriteData(data)
-
 
     def ShowSetW(self):
         text=self.new.cb_test.currentText()
         sl=self.ub.GetSetIniData(text)
         self.sw.SetMsg(sl)
         self.sw.show()
-
 
     def GetTimeOneHr(self):
         isok=False
@@ -119,21 +159,17 @@ class MainWindow(QMainWindow):
                     self.starttime=datetime.datetime.now()
         return isok
 
-
-# excel导出
     def OutExcel(self):
         sname="out"
         sl=self.db.QueryAll()
         self.ex.MakeSaveEx(sname,sl)
         self.ShowBox("EXCLE导出成功！！")
 
-# 休眠
     def GetTime10min(self):
         for i in range(0,self.resttime):
             self.Delay_MSec(1000)
             self.ShowMsg("运行一小时，等待休息时间："+str(i))
 
-# 初始化光度计串口设置
     def OpenPhoCom(self):
         try:
             text=self.new.btn_openpho.text()
@@ -143,6 +179,7 @@ class MainWindow(QMainWindow):
                 self.rc.OpenCom()
                 self.new.btn_openpho.setText("关闭")
                 self.new.btn_openpho.setStyleSheet("background-color:gold")
+                self.uarttime=self.GetTimeSmap()
             elif text=="关闭":
                 self.rc.CloseCom()
                 self.new.btn_openpho.setText("打开")
@@ -150,8 +187,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.ShowMsg("光度计串口设置失败："+str(e))
 
-
-# 设置电流
     def SetCurrent(self):
         try:
             cs=self.new.txt_current.text()
@@ -162,8 +197,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.ShowMsg("设置电流失败："+str(e))
 
-
-#  十六进制转  2进制
     def HexToBytes(self,dstr):
         sl=dstr.split(" ")
         bl=[]
@@ -172,8 +205,6 @@ class MainWindow(QMainWindow):
                 bl.append(int(e,16))
         return bl
 
-
-#
     def SendBytesByStr(self):
         hexstr=self.new.txt_send.text()
         if len(hexstr)>0:
@@ -181,7 +212,6 @@ class MainWindow(QMainWindow):
             bl=self.HexToBytes(hexstr)
             self.WriteData(bl)
 
-# 读取光度计
     def TestLightPho(self):
         try:
             lv=self.rc.ReadData()
@@ -233,8 +263,6 @@ class MainWindow(QMainWindow):
     def SetDk(self,dk):
         self.dk=dk
 
-
-# 光机投图
     def ShowImage(self):
         if self.w.isVisible():
             self.w.close()
@@ -248,14 +276,11 @@ class MainWindow(QMainWindow):
                     self.w.setGeometry(self.dk.screenGeometry(0))
                 self.w.showFullScreen()
 
-# 休眠
     def Delay_MSec(self,msec):
         t = QTime.currentTime().addMSecs(msec)
         while( QTime.currentTime() < t ):
             QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
 
-
-# 变更投图
     def ChangImage(self,b):
         if b==0:
             self.w.LoadImg("f.png")
@@ -266,12 +291,11 @@ class MainWindow(QMainWindow):
         elif b==3:
             self.w.LoadImg("black.png")
 
-
-# 开启自动测试
     def StartAutoTest(self,text):
         if text=="发送":
             self.new.btn_send.setText("关闭")
             self.new.btn_send.setStyleSheet("background-color:gold")
+            self.ld.InitPath()
             self.isauto=True
             self.testint=0
             self.testtime=self.slist["printtimes"]
@@ -279,12 +303,12 @@ class MainWindow(QMainWindow):
             self.testindex=0
             self.autotime=0
             self.isledoff=False
+            self.StopTim()
             self.RunTest()
         elif text=="关闭":
             self.new.btn_send.setText("发送")
             self.isauto=False
             self.new.btn_send.setStyleSheet("")
-
 
     def SendTest(self):
         text=self.new.cb_test.currentText()
@@ -314,6 +338,7 @@ class MainWindow(QMainWindow):
                             ql=self.ub.PowerOn()
                             if self.testint==0:
                                 self.WriteData(ql)
+                                self.StartTim()
                                 cdata+="------AUTO 开机--------\r\n"
                                 self.new.textBrowser.append("------AUTO 开机--------\r\n")
                                 self.testint=1
@@ -329,6 +354,7 @@ class MainWindow(QMainWindow):
                         if self.testint==0:
                             ql=self.ub.LedOff()
                             self.WriteData(ql)
+                            self.StartTim()
                             cdata+="------AUTO LED OFF--------\r\n"
                             self.new.textBrowser.append("------AUTO LED OFF--------\r\n")
                             self.testint=1
@@ -353,6 +379,7 @@ class MainWindow(QMainWindow):
                             bl=self.ub.IntToByte(self.ci)
                             ql=self.ub.SetLightCurrent(bl[0],bl[1],bl[0],bl[1],bl[0],bl[1])
                             self.WriteData(ql)
+                            self.StartTim()
                             cdata+="------AUTO 设置电流 "+str(self.ci)+"--------\r\n"
                             self.new.textBrowser.append("------AUTO 设置电流 "+str(self.ci)+"--------\r\n")
                             self.testint=1
@@ -362,6 +389,7 @@ class MainWindow(QMainWindow):
                         if self.testint==0:
                             ql=self.ub.LedOn()
                             self.WriteData(ql)
+                            self.StartTim()
                             self.testint=1
                     elif self.rstate==3:
                         for i in range(0,4):
@@ -384,14 +412,15 @@ class MainWindow(QMainWindow):
                             self.new.textBrowser.append("------AUTO 设置背景图 黑图--------\r\n")
                             ql=self.ub.LedOff()
                             self.WriteData(ql)
+                            self.StartTim()
                             cdata+="------AUTO LED OFF 3秒--------\r\n"
                             self.new.textBrowser.append("------AUTO LED OFF 3秒--------\r\n")
                             self.testint=1
                             self.isledoff=True
                             self.Delay_MSec(self.ledofftime)
-                            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                            #print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                             #time.sleep(self.ledofftime//1000)
-                            print("##############################")
+                            #print("##############################")
                             self.isledoff=False
                             #self.Delay_MSec(self.ledofftime)
                             #delaytime=self.ledofftime
@@ -401,6 +430,7 @@ class MainWindow(QMainWindow):
                         if self.testint==0:
                             ql=self.ub.Gettemperature()
                             self.WriteData(ql)
+                            self.StartTim()
                             cdata+="------AUTO 读LED温度--------\r\n"
                             self.new.textBrowser.append("------AUTO 读LED温度--------\r\n")
                             self.testint=1
@@ -418,6 +448,7 @@ class MainWindow(QMainWindow):
                                 self.ld.LogWriteAuto(cdata)
                                 cdata=""
                                 self.WriteData(ql)
+                                self.StartTim()
                                 self.autotime+=1
                                 self.testint=1
                                 self.testindex=0
@@ -427,8 +458,6 @@ class MainWindow(QMainWindow):
                             cdata=""
             else:
                 break
-
-
 
     def openCom(self):
         try:
@@ -493,27 +522,47 @@ class MainWindow(QMainWindow):
                 self.ShowMsg("开机"+self.GetRealState(buff[2]))
                 self.ShowReceive(buff,"开机")
                 if buff[2]==0x00 and self.isauto:
+                    self.Delay_MSec(250)
                     self.rstate=1
                     self.testint=0
+                    self.StopTim()
+                    if self.retrytimes>=1:
+                        self.ShowMsg("数据回传成功，对重试次数清0，当前重试次数："+str(self.retrytimes))
+                        self.retrytimes=0
             elif buff[1]==0xfb:
                 self.ShowMsg("关机"+self.GetRealState(buff[2]))
                 self.ShowReceive(buff,"关机")
                 if buff[2]==0x00 and self.isauto:
+                    self.Delay_MSec(250)
                     self.rstate=0
                     self.testint=0
+                    self.StopTim()
+                    if self.retrytimes>=1:
+                        self.ShowMsg("数据回传成功，对重试次数清0，当前重试次数："+str(self.retrytimes))
+                        self.retrytimes=0
             elif buff[1]==0x4b:
                 self.ShowMsg("LED ON"+self.GetRealState(buff[2]))
                 self.ShowReceive(buff,"LED ON")
                 if buff[2]==0x00 and self.isauto:
+                    self.Delay_MSec(250)
                     self.rstate=3
                     self.testint=0
+                    self.StopTim()
+                    if self.retrytimes>=1:
+                        self.ShowMsg("数据回传成功，对重试次数清0，当前重试次数："+str(self.retrytimes))
+                        self.retrytimes=0
             elif buff[1]==0x47:
                 self.ShowMsg("LED OFF"+self.GetRealState(buff[2]))
                 self.ShowReceive(buff,"LED OFF")
                 if buff[2]==0x00 and self.isauto:
+                    self.Delay_MSec(250)
                     self.rstate=4
                     self.testint=0
                     print("自动化：",self.rstate)
+                    self.StopTim()
+                    if self.retrytimes>=1:
+                        self.ShowMsg("数据回传成功，对重试次数清0，当前重试次数："+str(self.retrytimes))
+                        self.retrytimes=0
             elif buff[1]==0x53:
                 self.ShowMsg("查询LED状态"+self.GetRealState(buff[2]))
                 self.ShowReceive(buff,"查询LED状态")
@@ -526,9 +575,14 @@ class MainWindow(QMainWindow):
             elif buff[1]==0x54:
                 self.ShowMsg("设置电流值"+self.GetRealState(buff[2]))
                 self.ShowReceive(buff,"设置电流值")
-                if buff[2]==0x00:
+                if buff[2]==0x00 and self.isauto:
+                    self.Delay_MSec(250)
                     self.rstate=2
                     self.testint=0
+                    self.StopTim()
+                    if self.retrytimes>=1:
+                        self.ShowMsg("数据回传成功，对重试次数清0，当前重试次数："+str(self.retrytimes))
+                        self.retrytimes=0
             elif buff[1]==0x4e:
                 if buff[2]==0xff:
                     self.ShowMsg("获取LED温度异常")
@@ -537,12 +591,17 @@ class MainWindow(QMainWindow):
                     self.ShowMsg("LED温度："+str(buff[2])+"摄氏度")
                     self.ShowReceive(buff,"LED温度："+str(buff[2])+"摄氏度")
                     if self.isauto:
+                        self.Delay_MSec(250)
+                        self.StopTim()
                         self.rstate=5
                         self.testint=0
                         self.ltmp=buff[2]
                         self.AddRecord(self.lightv,self.ltmp)
                         self.lightv=0
                         self.ltmp=0
+                    if self.retrytimes>=1:
+                        self.ShowMsg("数据回传成功，对重试次数清0，当前重试次数："+str(self.retrytimes))
+                        self.retrytimes=0
             elif buff[1]==0x4f:
                 if buff[2]==0xff:
                     self.ShowMsg("LED工作时间获取错误")
@@ -589,7 +648,6 @@ class MainWindow(QMainWindow):
             blist.append(int.from_bytes(e,byteorder='big',signed=False))
         return blist
 
-
     def ShowMsg(self,s):
         self.new.textBrowser.append(s)
         self.lstr+=s+"\r\n"
@@ -602,7 +660,6 @@ class MainWindow(QMainWindow):
             self.lstr=""
         self.new.textBrowser.moveCursor(QtGui.QTextCursor.End)
 
-
     def ShowReceive(self,buff,text):
         data=self.HexString(buff)
         self.new.txt_receive.setText(data)
@@ -611,21 +668,18 @@ class MainWindow(QMainWindow):
         else:
             self.new.lab_info.setText("<font color=\"#0000FF\">"+text+"</font> ")
 
-
     def readData(self):
         lbyte=self.com.readLine()
         if len(lbyte)>0:
             lbuff=self.bytestoint(lbyte)
-            self.ShowMsg(self.HexString(lbuff))
+            self.ShowMsg(self.HexString(lbuff)+self.GetTimeSmap())
             self.CheckBuff(lbuff)
-
 
     def WriteData(self,buff):
         if self.isopen:
             self.com.write(bytearray(buff))
-            self.ShowMsg("发送数据:"+self.HexString(buff))
+            self.ShowMsg("发送数据:"+self.HexString(buff)+self.GetTimeSmap())
             self.new.txt_send.setText(self.HexString(buff))
-
 
     def serachports(self):
         comlist=QSerialPortInfo.availablePorts()
@@ -635,13 +689,9 @@ class MainWindow(QMainWindow):
             self.new.cb_comname.addItem(e.portName())
             self.new.cb_pho.addItem(e.portName())
 
-
-
     def ShowBox(self,msg):
         reply = QMessageBox.information(self, "串口测试", msg, QMessageBox.Yes)
-
-
-
+			
     def closeEvent(self, event):
         try:
             if self.w.isVisible():
