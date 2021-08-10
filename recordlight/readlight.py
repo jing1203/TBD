@@ -2,6 +2,7 @@
 import serial
 import time
 import struct
+
 class readcom():
     def __init__(self,portname):
         self.portname=portname

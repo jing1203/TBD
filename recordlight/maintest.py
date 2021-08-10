@@ -67,13 +67,13 @@ class RecordLight():
     def InitCom(self): # 初始化传感器
         comname=self.c1
         self.rc=readcom2(comname)
-        self.rc.InitCOm(self.b1)
+        self.rc.InitCom(self.b1)
         self.isopen=self.rc.OpenCom()
         self.InitLight()
 
     def InitLight(self):   # 初始化光度计
         self.oldrc=readcom(self.c2)
-        self.oldrc.InitCOm(self.b2)
+        self.oldrc.InitCom(self.b2)
         self.oldrc.OpenCom()
 
     """

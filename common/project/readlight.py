@@ -2,7 +2,7 @@
 import serial
 import time
 import struct
-
+import pytest
 """
 光度计串口配置：初始化、打开串口、关闭串口、十六进制转字符、读取光度计数据
 """
@@ -21,6 +21,7 @@ class readcom():
         self.com.stopbits = 1
         self.com.parity = serial.PARITY_NONE
 
+    @pytest.fixture()
     def OpenCom(self):
         self.com.open()
         isok=False

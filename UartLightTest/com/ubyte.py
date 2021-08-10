@@ -1,4 +1,6 @@
 #coding:utf-8
+
+import  warnings
 class Ubyte():
     def __init__(self):
         self.speed1=60
@@ -133,11 +135,13 @@ class Ubyte():
         return crc
 
     def GetTestHeads(self):
-        hl=["开机","关机","打开LED","关闭LED","查询LED","保存电流与画面翻转","刷新HDMI","设置光机电流","查询LED温度","读LED工作时间","清除LED工作时间","获取软件版本","设置风扇2","设置风扇1",
+        hl=["开机","关机","打开LED","关闭LED","查询LED","保存电流与画面翻转","刷新HDMI","设置光机电流","查询LED温度",
+            "读LED工作时间","清除LED工作时间","获取软件版本","设置风扇2","设置风扇1",
             "设置画面倒转","读PWM"]
         return hl
 
     def IntToByte(self,b):
+        # warnings.warn("turn to tool, is deprecated", DeprecationWarning)
         bl=[]
         if b<255:
             bl=[b,0]
